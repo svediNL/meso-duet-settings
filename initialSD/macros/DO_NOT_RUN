@@ -1,0 +1,109 @@
+; Test Routine for Duet WiFi and Ethernet Nov 17
+
+;Start logging
+; M929 P"testlog.txt" S1 ; only for V1.20
+
+
+M570 H1 P120 T120			; Extend the heater H1 fault timeout to 120 seconds for testing
+M570 H2 P120 T120			; Same for H2
+M570 H0 P120 T120			; Same for H0
+
+M117 CHECK IR PROBE & PANELDUE THEN PRESS X ENDSTOP.
+M577 X S2 ; wait for endstop to trigger
+M577 X S0 ; wait for endstop release
+
+; Test motors
+;----setup motors for test----
+M906 X2000 Y2000 Z2000 E2000:2000 I100 ;set all motors to 2A with no idle current reduction
+
+M563 P2 D0:1 H1:2 ; Define a tool T2 using both heaters
+T2 ; Select tool T2
+M92 E80:80	; Set extruder steps per mm to the same as other axis
+M83 ;relative extruder movement
+G91 ;relative axis movement
+M302 P1          ;disable cold extrusion prevention
+;----end motor setup steps---
+
+;----homing line (tests endstops)----
+M117 PRESS ALL THREE ENDSTOPS TO END HOMING
+G91					; use relative positioning
+G1 S1 X3200 Y3200 Z3200 F9000		; move XYZ motors, stopping when endstops are triggered
+;----end homing lines----
+
+; Test PWM fans while motors keep moving
+M106 P0 S255
+M106 P1 S255
+M106 P2 S255
+
+;--------------------------------------------------------------------------------------
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+
+;-------------------------------------------------------------------------------------
+M117 PRESS X ENDSTOP, FANS TURN SLOWLY?
+M577 X S2 ; wait for endstop to trigger
+M577 X S0 ; wait for endstop release
+;slow fan test
+M106 P2 S0.1
+M106 P1 S0.1
+M106 P0 S0.1
+;--------------------------------------------------------------------------------------
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+;--------------------------------------------------------------------------------------
+; Turn PWM fans on again to cool hotends
+M106 P0 S255
+M106 P1 S255
+M106 P2 S255
+;--------------------------------------------------------------------------------------
+;---Heater testing----
+
+M117 PRESS X ENDSTOP, HEATING?
+M577 X S2 ; wait for endstop to trigger
+M577 X S0 ; wait for endstop release
+; Start heating bed
+M140 S80
+; start heating hotends - both at the same time , defined as Tool P2 at top
+G10 P2 S80:80
+; Run motors during heater tests
+;--------------------------------------------------------------------------------------
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+;--------------------------------------------------------------------------------------
+
+;--------------------------------------------------------------------------------------
+M117 PRESS X ENDSTOP, ALL MOTORS TURNING?
+M577 X S2 ; wait for endstop to trigger
+M577 X S0 ; wait for endstop release
+;--------------------------------------------------------------------------------------
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+G1 X200 Y200 Z200 E200:200 F9000				;----motor move positive Direction ----
+G1 X-200 Y-200 Z-200 E-200:-200 F9000				;----motor move negative Direction ----
+;--------------------------------------------------------------------------------------
+; Turn PWM fans off
+; turn off Bed
+M140 S0
+; turn off hotends
+G10 P2 S0:0
+
+M106 P0 S0
+M106 P1 S0
+M106 P2 S0
+
+M84 ; disable motors
+M117 END OF TEST - POWER OFF BEFORE OPENING LID!; send message to DWC
