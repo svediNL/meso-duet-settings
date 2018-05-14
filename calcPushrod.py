@@ -34,10 +34,13 @@ class Extruder:
 	motorRes = int(3200)		# in [steps/revolution]
 
 		
+print ""
+print " + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + "
+print ""
 
 extruder = Extruder
 
-extruder.pushrod.pitch = float(raw_input( " > Thread pitch of the pushrod 	[mm] : " ))
+extruder.pushrod.pitch = float(raw_input( " > Thread pitch of the pushrod 	[mm/rev] : " ))
 extruder.pushrod.volume = float(raw_input( " > Volume of the threaded pushrod [mm^3] : " ))
 extruder.barrel.diameter = float(raw_input(" > Diameter of the barrel 	[mm] : "))
 print " ... "
@@ -61,3 +64,7 @@ print " > Volume per revolutions 	[mm^3/rev] : ", volPerRev
 print " > Volume per steps 		[mm^3/step] : ", volPerStep
 print " > Above as 3mm filament	[mm/step] : ", volPerStep/ ( 3.14 * pow( 3/2 , 2) )
 print " > Above as 3mm filament	[steps/mm] : ", ( 3.14 * pow( 3/2 , 2) ) / volPerStep
+
+print ""
+print " + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + "
+print ""

@@ -87,7 +87,7 @@ M208 X230 Y210 Z200 S0                     ; Set axis maxima
 
 ; legit stepper settings
 ; M350 X16 Y16 Z16 E16:16:16:16 I1           ; Configure microstepping with interpolation
-; M92 X640 Y640 Z320 E440:440:440:440     ; Set steps per mm
+; M92 X640 Y640 Z320 E717.71:440:440:440     ; Set steps per mm
 
 ; test stepper settings
 M350 X1 Y1 Z1 E1:1:1:1          	; Configure fullstepping
