@@ -63,16 +63,21 @@ G21					; Set metrics to millimetres
 G90					; Set absolute G-code coordinate moves
 M83					; Set relative G-code extruder moves (reduces drifting)
 
-; M574 X2 Y2 Z2	S1			; Set endstop locations & active state	 XYZ0/1/2 = off/min/max		S0/1 = active low/high	
-M208 X0 Y0 Z0 S1            ; Set axis minima
-M208 X230 Y210 Z200 S0      ; Set axis maxima
+M574 X2 Y2 Z2 S1	; Set homing endstop locations & active state	 XYZ0/1/2 = no endstop/min pos/max pos		S0/1 = active low/high
+M581 E0 T0			; configure external trigger (E-stop) 	on E0 input 	triggers E-stop (T0)
+M581 E1 T0			; configure external trigger (X min) 	on E1 input 	triggers E-stop (T0)
+M581 E2 T0			; configure external trigger (Y min) 	on E2 input 	triggers E-stop (T0)
+M581 E3 T0			; configure external trigger (Z min) 	on E3 input 	triggers E-stop (T0)
 
-M302 P1 			; Allow cold extrusions		P1/0 = enable/disable
-M564 H0				; Allow movement of unhomed axis 	H1/0 = disable/enable
+M208 X0 Y0 Z0 S1 		; Set axis minima
+M208 X230 Y210 Z200 S0 	; Set axis maxima
+M302 P1 				; Allow cold extrusions		P1/0 = enable/disable
+M564 H0					; Allow movement of unhomed axis 	H1/0 = disable/enable
 
 ;   + - + - +   N E T W O R K   + - + - +
 M552 S0						; Turn network off
-M552 P192.168.1.14			; Set IP adress		P0.0.0.0 = DHCP
+;M552 P192.168.1.14			; Set IP adress		P0.0.0.0 = DHCP
+M552 P0.0.0.0
 M554 P192.168.1.255			; Set gateway
 M553 P255.255.255.0			; Set netmask
 M552 S1						; Turn network on 	S1/0 = on/off
@@ -112,7 +117,7 @@ M568 P0 S1 					; Enable mixing
 M567 P0 E1:1 				; Set mixing ratios
 
 ;	# # #   T O O L  1   # # #
-M563 P1 D0:1 H2				; Define tool 1		extruder 0 & 2		heater 2
+M563 P1 D0:2 H2				; Define tool 1		extruder 0 & 2		heater 2
 G10 P1 X0 Y0 Z0 			; Set offsets tool 1 
 G10 P1 R0 S0 				; Set initial 	active (S) and 	standby (R) temperatures to 0C
 M568 P1 S1 					; Enable mixing
