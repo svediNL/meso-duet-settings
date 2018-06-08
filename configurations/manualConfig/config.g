@@ -76,7 +76,7 @@ M564 H0					; Allow movement of unhomed axis 	H1/0 = disable/enable
 
 ;   + - + - +   N E T W O R K   + - + - +
 M552 S0						; Turn network off
-;M552 P192.168.1.14			; Set IP adress		P0.0.0.0 = DHCP
+; M552 P192.168.1.14		; Set IP adress		P0.0.0.0 = DHCP
 M552 P0.0.0.0
 M554 P192.168.1.255			; Set gateway
 M553 P255.255.255.0			; Set netmask
