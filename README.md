@@ -1,6 +1,22 @@
 # meso-duet-settings
 This repository contains the documents which are/were needed to enable the use of a Duet board on a multi-printhead 3D printer.
 
+## postprocessing
+### _manipulate_retraction.py_
+This script is used to alter the retraction command in order to disable/reduce the retaction on the rudder extruder.
+
+A couple of variable should be mentioned in the G-code:
+* **E_USED**: number of extruders used in tool.
+* **MODE**: replacement mode.
+  * **0**: remove all retraction.
+  * **1**: E0:1:1:1 disable rudder retraction.
+  * **2**: E1:1:1:0 disable rudder retraction.
+  * **3**: Ex:1:1:1 reduce rudder retraction.
+  * **4**: E1:1:1:x reduce rudder retraction.
+* **E_RED**: reduction of rudder retraction when mode 3/4 is used.
+
+The command should be followed by a space-character followed by the actual value:
+<code> ;[COMMAND] SPACE [VALUE] </code>
 
 ## _C O N T E N T S_
 Repository contents:
