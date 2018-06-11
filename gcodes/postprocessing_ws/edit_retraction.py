@@ -9,7 +9,7 @@ import tempfile
 
 # https://github.com/svediNL/meso-duet-settings
 
-# /Users/svedi/Documents/GitHub/meso-duet-settings/gcodes/postprocessing_ws/posttest.py
+# /Users/svedi/Documents/GitHub/meso-duet-settings/gcodes/postprocessing_ws/edit_retraction.py
 
 # # PREPENDABLE VARIABLES IN G-CODE:
 # - E_USED:		set number of extruders used
