@@ -7,11 +7,9 @@ import argparse
 import math
 import tempfile
 
-# https://github.com/svediNL/meso-duet-settings
-
 # /Users/svedi/Documents/GitHub/meso-duet-settings/gcodes/postprocessing_ws/posttest.py
 
-# # PREPENDABLE VARIABLES IN G-CODE:
+# # GCODE PREPENDED VARIABLES:
 # - E_USED:		set number of extruders used
 # - MODE:		set replacement mode
 # - E_RED:		reduction faction of rudder extruder when mode 3/4 is used
@@ -41,31 +39,27 @@ class gcode(object):
 		# iterate through lines
 		for line in self.inFile.readlines():
 			i=len(line) - 1
-			if re.search("start_gcode", line) is None :
 
-				## if a known variable was found, add it to the class
-				if re.search("E_USED", line) is not None:
-					for c in reversed(line):
-						if c is " ":
-							print repr(line)
-							self.extruders = int(line[i:])
-							break
-						i-=1
+			## if a known variable was found, add it to the class
+			if re.search("E_USED", line) is not None:
+				for c in reversed(line):
+					if c is " ":
+						self.extruders = int(line[i:])
+						break
+					i-=1
 
-				if re.search("MODE", line) is not None:
-					for c in reversed(line):
-						if c is " ":
-							print repr(line)
-							self.mode = int(line[i:])
-							break
-						i-=1
-				if re.search("E_RED", line) is not None:
-					for c in reversed(line):
-						if c is " ":
-							print repr(line)
-							self.reduction = float(line[i:])
-							break
-						i-=1
+			if re.search("MODE", line) is not None:
+				for c in reversed(line):
+					if c is " ":
+						self.mode = int(line[i:])
+						break
+					i-=1
+			if re.search("E_RED", line) is not None:
+				for c in reversed(line):
+					if c is " ":
+						self.mode = int(line[i:])
+						break
+					i-=1
 
 		self.inFile.seek(0) # reset iterator
 
@@ -117,7 +111,7 @@ class gcode(object):
 		return float(line[pos+1:pos+length-1])
 
 	# build replacement line
-	def build_retraction_line(self, line):
+	def build_retraction_line(self, line,):
 		pos, length = self.find_retraction_pos(line)
 		extrVal = self.get_retraction_param(line)
 		editedLine = ""
@@ -185,7 +179,7 @@ class gcode(object):
 		else:
 			return ""
 
-# main function that is excecuted by SLIC3R
+# # main function that is excecuted by SLIC3R
 def main():
 
 	# use file in local directory 
@@ -199,7 +193,7 @@ def main():
 		gin.close()
 		gout.close()
 
-	os.rename(filePath + ".fixed", filePath) #delete temporary outFile
+	# os.rename(filePath + ".fixed", filePath) #delete temporary outFile
 
 if __name__ == "__main__":
     main()
