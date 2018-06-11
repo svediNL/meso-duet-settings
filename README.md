@@ -2,7 +2,7 @@
 This repository contains the documents which are/were needed to enable the use of a Duet board on a multi-printhead 3D printer.
 
 ## postprocessing
-### _manipulate_retraction.py_
+### /gcodes/postprocessing_ws/_manipulate_retraction.py_
 This script is used to alter the retraction command in order to disable/reduce the retaction on the rudder extruder.
 
 A couple of variable should be mentioned in the G-code:
