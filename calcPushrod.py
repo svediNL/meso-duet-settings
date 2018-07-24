@@ -1,81 +1,109 @@
-class Pushrod:
-	"""docstring for Pushrod"""
-	def __init__(self, arg):
-		super(Pushrod, self).__init__()
-		self.arg = arg
+pi = 22/7
 
-	pitch = 2.5		# in [mm/revolution]
-	volume = 14.65	# in [mm^3]
-	length = 10 			# in [mm]
-	revolutions = 4
+class Pushrod():
+	"""contains properties of the pushrod"""
+	def __init__(self):
+		self.pitch = 2.5		# in [mm/revolution]
+		self.volume = 14.65	# in [mm^3]
+		self.thread_length = 10.0 			# in [mm]
+		self.revolutions = 4
 
-class Barrel:
-	"""docstring for Barrel"""
-	def __init__(self, arg):
-		super(Barrel, self).__init__()
-		self.arg = arg
+	def setParameters(self):
+		self.pitch = float( getValue( " ? Thread pitch of the pushrod 	[mm/rev] : " , self.pitch ) )
+		self.volume = float( getValue(" ? Volume of the threaded pushrod [mm^3] : ", self.volume ) )
+		self.thread_length = float( getValue(" ? Length of the threaded section [mm]	 : ", self.thread_length ) )
 
-	mixingLength = 7		# in [mm]
+		self.setRevolutions()
 
-	diameter = 3	# in [mm]
-	length = 10
-	volume = 70.68
+	def setRevolutions(self):
+		self.revolutions = self.thread_length / self.pitch
 
-class Extruder:
-	"""docstring for Extruder"""
-	def __init__(self, arg):
-		super(Extruder, self).__init__()
-		self.arg = arg
+class Barrel():
+	"""contains properties of the Barrel"""
+	def __init__(self):
+		self.mixing_length = 7.0		# in [mm]
+		self.diameter = 3.0	# in [mm]
+		self.length = 10.0
+		self.volume = 70.68
 
-	barrel = Barrel
-	pushrod = Pushrod
+	def setVolume(self):
+		self.volume = self.length * pi * pow((self.diameter / 2), 2)
 
-	nozzleDiameter = 1	# in [mm]
-	motorRes = 3200		# in [steps/revolution]
+	def setParameters(self):
+		self.diameter = float( getValue(" ? Inner diameter of the barrel [mm]	 : " , self.diameter ) )
+		self.mixing_length = getValue( " ? Height from nozzle to centre of filament entrance [mm] : ",  self.mixing_length)
+
+		self.setVolume()
+
+class Extruder():
+	"""contains properties of entire extruder"""
+	def __init__(self):
+		self.barrel = Barrel()
+		self.pushrod = Pushrod()
+		self.mixing_volume = -1.0
+
+		self.nozzle_diameter = 1	# in [mm]
+		self.microstepping = 16
+		self.motor_resolution = 3200		# in [steps/revolution]
+
+	def setMotorResolution(self):
+		self.microstepping = int(getValue(" ? Microstepping on motor 	[ 1, 2, 4, 8, ... ]	: " , self.microstepping))
+		self.motor_resolution=200* self.microstepping
+
+	def calcVolumePerStep(self):
+		return self.mixing_volume / self.pushrod.revolutions 
+
+	def setMixingVolume(self):
+		self.mixing_volume = (self.barrel.mixing_length / self.pushrod.thread_length) * ( self.barrel.volume - self.pushrod.volume )
 
 def getValue(questionString, var):
 	value = raw_input(questionString)
 	#check if value is a digit
 	if value.replace('.', '', 1).isdigit():
 		var = float(value)
-		# print " > " , var
+		print " ~ " , var
 	else:
 		var = var
-		print " > default value : " , var
+		print " ~ default value : " , var
 
 	return var
-	
-		
-print ""
-print " + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + "
-print ""
 
-extruder = Extruder
+def main():
+	print ""
+	print "             PUSHROD / RUDDER   EXTRUSION FACTOR   CALCULATOR "
+	print ""
+	print "            - CALCULATE THE VOLUMETRIC  EXTRUSION RESOLUTION - "
+	print "            -          AND THE FILAMENT  EQUIVALENT          - "
+	print ""
+	print " 	*	standard values are based on data from around may	*	  "
+	print ""
 
-extruder.pushrod.pitch = float( getValue( " > Thread pitch of the pushrod 	[mm/rev] : " , extruder.pushrod.pitch ) )
-extruder.pushrod.volume = float( getValue(" > Volume of the threaded pushrod [mm^3] : ", extruder.pushrod.volume ) )
-extruder.barrel.diameter = float( getValue(" > Diameter of the barrel 	[mm] : " , extruder.barrel.diameter ) )
-print " ... "
+	extruder = Extruder() # declare extruder clas, which contains a barrel and pushrod class
 
-extruder.pushrod.revolutions = float(extruder.pushrod.length / extruder.pushrod.pitch)
-extruder.barrel.volume = extruder.barrel.length * 3.14 * pow((extruder.barrel.diameter / 2), 2)
-print " > Total volume in the barrel 	[mm^3] : ", extruder.barrel.volume
-print " > Free volume in the barrel 	[mm^3] : ", extruder.barrel.volume - extruder.pushrod.volume
-print " ... "
+	# get and set variables based on input from the user
+	print " > S Y S T E M     V A R I A B L E S"
+	extruder.pushrod.setParameters()
+	extruder.barrel.setParameters()
+	extruder.setMixingVolume()
+	extruder.setMotorResolution() 
+	volume_per_revolution = extruder.calcVolumePerStep()
+	volume_per_step = volume_per_revolution / extruder.motor_resolution
 
-extruder.motorRes = int(200 * getValue(" > Microstepping on motor 	[ 1, 2, 4, 8, ... ] : ", (extruder.motorRes/200) ))
-print " ... "
+	print " ... "
+	print " > Total volume in the barrel [mm^3]			: ", extruder.barrel.volume
+	print " > Volume in the mixing part of the barrel [mm^3]	: ", extruder.barrel.volume - extruder.pushrod.volume
+	print " > Volume in the barrel for mixing [mm^3]		: ", extruder.mixing_volume
+	print ""
+	print " > Volume per revolution [mm^3/rev] 	: ", volume_per_revolution
+	print " > Volume per step [mm^3/step]		: ", volume_per_step
+	print " > Volume per step [steps/mm^3]        : ", 1 / volume_per_step
+	print ""
+	print " > Above as 2.85mm filament [mm/step]	: ", volume_per_step / ( 3.14 * pow( 2.85/2 , 2))
+	print " > Above as 2.85mm filament [steps/mm]	: ", ( 3.14 * pow( 2.85/2 , 2)) / volume_per_step
 
-print " > Motor resolution		[steps/rev] : ", extruder.motorRes
-print " ... "
+	print ""
+	print " + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + "
+	print ""
 
-volPerRev = ( ((extruder.barrel.volume - extruder.pushrod.volume) / extruder.pushrod.revolutions ) )
-volPerStep = volPerRev / extruder.motorRes
-print " > Volume per revolutions 	[mm^3/rev] : ", volPerRev
-print " > Volume per steps 		[mm^3/step] : ", volPerStep
-print " > Above as 3mm filament	[mm/step] : ", volPerStep/ ( 3.14 * pow( 3/2 , 2) )
-print " > Above as 3mm filament	[steps/mm] : ", ( 3.14 * pow( 3/2 , 2) ) / volPerStep
-
-print ""
-print " + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + - + "
-print ""
+if __name__ == "__main__":
+	main()
